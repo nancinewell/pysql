@@ -26,13 +26,13 @@ class Monster():
         return randomPlayer
           
     #add monster
-    def addMonster(self, name, img):
+    def addMonster(self, name, img, bank):
         #connect & create cursor
         conn = self.openConnection()
         c = conn.cursor()
         #insert new monster
-        addNewMonster = f"""INSERT INTO monsters (name, image) 
-        VALUES ('{name}', '{img}');"""
+        addNewMonster = f"""INSERT INTO monsters (name, image, bank) 
+        VALUES ('{name}', '{img}', '{bank}');"""
         c.execute(addNewMonster)
         #commit & close connection
         conn.commit()
@@ -71,12 +71,12 @@ class Monster():
         return fetchedMonster
 
     #modify monster
-    def updateMonster(self, monster_id, name, img):
+    def updateMonster(self, monster_id, name, img, bank):
         #connect & create cursor
         conn = self.openConnection()
         c = conn.cursor()
         #modify monster
-        modifyMonster = f"""UPDATE monsters SET name = '{name}', image = '{img}'
+        modifyMonster = f"""UPDATE monsters SET name = '{name}', image = '{img}', bank = '{bank}'
         WHERE monster_id = '{monster_id}';"""
         c.execute(modifyMonster)
         #commit & close connection

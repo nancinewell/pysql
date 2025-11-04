@@ -5,6 +5,7 @@ from monsterClass import Monster
 from studentClass import Student
 from questionsClass import Question
 from PIL import ImageTk, Image  
+from tkinter import ttk
 
 # # # # # # # # # # #  CREATE TABLES  # # # # # # # # # #
 #define connection and cursor
@@ -16,7 +17,8 @@ createMosterTable = """CREATE TABLE IF NOT EXISTS
 monsters(
 monster_id INTEGER PRIMARY KEY
 , name TEXT
-, image TEXT)
+, image TEXT
+, bank TEXT)
 """
 c.execute(createMosterTable)
 
@@ -63,7 +65,7 @@ class Application(tk.Tk):
         #set app title
         self.title("Boss Battle")
         #set size of app
-        self.geometry('700x500')
+        self.geometry('800x500')
 
         #set frame configuration
         self.columnconfigure(0, weight=1)
@@ -80,7 +82,7 @@ class WhatToDo(tk.Frame):
         #configure rows/columns
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
-
+        #Call WelcomeOptions function
         self.WelcomeOptions()
       
     def WelcomeOptions(self, frame = None,  msg = None):
@@ -110,14 +112,8 @@ class WhatToDo(tk.Frame):
         self.questionBtn = tk.Button(self.welcomeFrame, text = "Access Questions", font = ("Times New Roman", 14), command = lambda:self.AccessQuestions(self.welcomeFrame)) 
         self.questionBtn.grid(row = 5, column = 0, pady = 10)
 
-# # # # # # # # # # # # # # # # # # # # # # # # # image testing # # # # # # # # # # # # # # # # # # # # # # # # # 
-        monsterName = "monster-2.png"
-        image1 = ImageTk.PhotoImage(Image.open(f"img/{monsterName}").resize((100,100)))
-        label1 = tk.Label(self.welcomeFrame, image=image1)
-        label1.image = image1
-        label1.grid(row = 6, column = 0)
-    
-    # # # # # # # # # # #  ACCESS STUDENTS  # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ACCESS STUDENTS  # # # # # # # # # # # # # # # # # # # # # #
     def AccessStudents(self, frame):
         self.destroyThing(frame)
 
@@ -175,15 +171,22 @@ class WhatToDo(tk.Frame):
         self.addStudentFormFrame.grid(row = 0, column = 0, sticky = "news")
         #configure columns/rows
         self.addStudentFormFrame.columnconfigure(0, weight=1)
-        self.addStudentFormFrame.rowconfigure(0, weight=1)   
+        self.addStudentFormFrame.columnconfigure(0, weight=1)
+        self.addStudentFormFrame.rowconfigure(0, weight=1)
+        self.addStudentFormFrame.rowconfigure(1, weight=2)
+        self.addStudentFormFrame.rowconfigure(2, weight=1)
+        self.addStudentFormFrame.rowconfigure(3, weight=2)
+        self.addStudentFormFrame.rowconfigure(4, weight=8)
+        self.addStudentFormFrame.rowconfigure(5, weight=3)
+        
         #create elements to collect data
-        self.addStudentNameLabel = tk.Label(self.addStudentFormFrame, text = "Student Name", font= ("Times New Roman", 18), wraplength=350, pady = 15)
+        self.addStudentNameLabel = tk.Label(self.addStudentFormFrame, text = "Student Name", font= ("Times New Roman", 18), wraplength=350, pady = 5)
         self.addStudentNameLabel.grid(row = 0, column = 0)
 
         self.addStudentNameEntry = tk.Entry(self.addStudentFormFrame, font = ("Times New Roman", 14), bd = 5, relief="flat", borderwidth=10)
         self.addStudentNameEntry.grid(row = 1, column = 0)
 
-        self.addStudentImgLabel = tk.Label(self.addStudentFormFrame, text = "Image Name", font= ("Times New Roman", 18), wraplength=350, pady = 15)
+        self.addStudentImgLabel = tk.Label(self.addStudentFormFrame, text = "Image Name", font= ("Times New Roman", 18), wraplength=350, pady = 5)
         self.addStudentImgLabel.grid(row = 2, column = 0)
 
         self.addStudentImgEntry = tk.Entry(self.addStudentFormFrame, font = ("Times New Roman", 14), bd = 5, relief="flat", borderwidth=10)
@@ -334,7 +337,8 @@ class WhatToDo(tk.Frame):
             self.errorMsg = tk.Label(frame, text = f"Error: {e}. Student not added.", font= ("Times New Roman", 12), wraplength=350, pady = 15, fg = "red")
             self.errorMsg.grid(row = 5, column = 0)
     
-    # # # # # # # # # # #  ACCESS MONSTERS  # # # # # # # # # #
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ACCESS MONSTERS  # # # # # # # # # # # # # # # # # # # # # #
 
     def AccessMonsters(self, frame):
         self.destroyThing(frame)
@@ -371,7 +375,7 @@ class WhatToDo(tk.Frame):
         self.viewAllMonstersFrame.rowconfigure(0, weight=1)
 
         #hold headers to send for display
-        headers = ["ID", "Name", "Image"]
+        headers = ["ID", "Name", "Image", "Bank"]
         #hold monsters in list to send for display
         wanderingMonster.getMonsters()
         getMonsters = wanderingMonster.allMonsters
@@ -379,7 +383,7 @@ class WhatToDo(tk.Frame):
         self.displayList(getMonsters, headers, self.viewAllMonstersFrame, "monsters")   
 
         self.homeBtn = tk.Button(self.viewAllMonstersFrame, text = "Home", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(frame=self.viewAllMonstersFrame)) 
-        self.homeBtn.grid(row = 0, column = 4, pady = 5)        
+        self.homeBtn.grid(row = 0, column = 5, pady = 5)        
     
     def AddMonsterForm(self):
         #Destroy the previous frame
@@ -389,7 +393,14 @@ class WhatToDo(tk.Frame):
         self.addMonsterFormFrame.grid(row = 0, column = 0, sticky = "news")
         #configure columns/rows
         self.addMonsterFormFrame.columnconfigure(0, weight=1)
-        self.addMonsterFormFrame.rowconfigure(0, weight=1)   
+        self.addMonsterFormFrame.rowconfigure(0, weight=1)
+        self.addMonsterFormFrame.rowconfigure(1, weight=1)
+        self.addMonsterFormFrame.rowconfigure(2, weight=1)
+        self.addMonsterFormFrame.rowconfigure(3, weight=1)
+        self.addMonsterFormFrame.rowconfigure(4, weight=1)
+        self.addMonsterFormFrame.rowconfigure(5, weight=1)
+        self.addMonsterFormFrame.rowconfigure(6, weight=1)
+        self.addMonsterFormFrame.rowconfigure(7, weight=1)
         #create elements to collect data
         self.addMonsterNameLabel = tk.Label(self.addMonsterFormFrame, text = "Monster Name", font= ("Times New Roman", 18), wraplength=350, pady = 15)
         self.addMonsterNameLabel.grid(row = 0, column = 0)
@@ -403,23 +414,29 @@ class WhatToDo(tk.Frame):
         self.addMonsterImgEntry = tk.Entry(self.addMonsterFormFrame, font = ("Times New Roman", 14), bd = 5, relief="flat", borderwidth=10)
         self.addMonsterImgEntry.grid(row = 3, column = 0)
 
+        self.addMonsterBankLabel = tk.Label(self.addMonsterFormFrame, text = "Bank Name", font= ("Times New Roman", 18), wraplength=350, pady = 15)
+        self.addMonsterBankLabel.grid(row = 4, column = 0)
+
+        self.addMonsterBankEntry = tk.Entry(self.addMonsterFormFrame, font = ("Times New Roman", 14), bd = 5, relief="flat", borderwidth=10)
+        self.addMonsterBankEntry.grid(row = 5, column = 0)
+
         #create frame to hold buttons
         self.BtnFrame = tk.Frame(self.addMonsterFormFrame)
-        self.BtnFrame.grid(row = 4, column = 0)
+        self.BtnFrame.grid(row = 6, column = 0)
         self.BtnFrame.columnconfigure(0, weight=1) 
         self.BtnFrame.columnconfigure(1, weight=1) 
         self.BtnFrame.columnconfigure(2, weight=1)
-
-        self.addMonsterBtn = tk.Button(self.BtnFrame, text = "Add Monster", font = ("Times New Roman", 14), command = lambda: self.AddMonster(self.addMonsterNameEntry.get(),self.addMonsterImgEntry.get(),self.addMonsterFormFrame )) 
+        #button to add monster
+        self.addMonsterBtn = tk.Button(self.BtnFrame, text = "Add Monster", font = ("Times New Roman", 14), command = lambda: self.AddMonster(self.addMonsterNameEntry.get(),self.addMonsterImgEntry.get(),self.addMonsterBankEntry.get(), self.addMonsterFormFrame )) 
         self.addMonsterBtn.grid(row = 0, column = 0, pady = 5, padx = 10)
-
+        #button to cancel
         self.cancelBtn = tk.Button(self.BtnFrame, text = "Cancel", font = ("Times New Roman", 14), command = lambda: self.ViewAllMonsters(self.addMonsterFormFrame)) 
         self.cancelBtn.grid(row = 0, column = 1, pady = 5, padx = 10) 
 
-    def AddMonster(self, name, img, frame):
+    def AddMonster(self, name, img, bank, frame):
         try:
             #add the monster with given info
-            wanderingMonster.addMonster(name, img)
+            wanderingMonster.addMonster(name, img, bank)
             #Destroy the previous frame
             self.destroyThing(frame)
             #send back to welcome screen
@@ -427,7 +444,7 @@ class WhatToDo(tk.Frame):
         except Exception as e:
             #alert user to error message and incomplete addition of monster.
             self.errorMsg = tk.Label(frame, text = f"Error: {e}. Monster not added.", font= ("Times New Roman", 12), wraplength=350, pady = 15, fg = "red")
-            self.errorMsg.grid(row = 5, column = 0)
+            self.errorMsg.grid(row = 7, column = 0)
         
     def EditMonsterForm(self, monster_id, frame):
         #fetch monster
@@ -435,6 +452,7 @@ class WhatToDo(tk.Frame):
         #convert monster info to TKString for default values
         monsterName = tk.StringVar(value = monsterToEdit[1])
         monsterImg = tk.StringVar(value = monsterToEdit[2])
+        monsterBank = tk.StringVar(value = monsterToEdit[3])
 
         #Destroy the previous frame
         self.destroyThing(frame)
@@ -457,29 +475,36 @@ class WhatToDo(tk.Frame):
 
         self.editMonsterImgEntry = tk.Entry(self.editMonsterFormFrame, textvariable= monsterImg, font = ("Times New Roman", 14), bd = 5, relief="flat", borderwidth=10)
         self.editMonsterImgEntry.grid(row = 3, column = 0)
+
+        self.editMonsterBankLabel = tk.Label(self.editMonsterFormFrame, text = "Bank Name", font= ("Times New Roman", 18), wraplength=350, pady = 15)
+        self.editMonsterBankLabel.grid(row = 4, column = 0)
+
+        self.editMonsterBankEntry = tk.Entry(self.editMonsterFormFrame, textvariable= monsterBank, font = ("Times New Roman", 14), bd = 5, relief="flat", borderwidth=10)
+        self.editMonsterBankEntry.grid(row = 5, column = 0)
         try:
+            #attempt to display image
             monsterAvatar = ImageTk.PhotoImage(Image.open(f"img/{monsterToEdit[2]}").resize((150,150)))
             self.imageLabel = tk.Label(self.editMonsterFormFrame, image=monsterAvatar)
             self.imageLabel.image = monsterAvatar
-            self.imageLabel.grid(row = 4, column = 0, pady = 5)
+            self.imageLabel.grid(row = 6, column = 0, pady = 5)
         finally:
             #create frame to hold buttons
             self.BtnFrame = tk.Frame(self.editMonsterFormFrame)
-            self.BtnFrame.grid(row = 5, column = 0)
+            self.BtnFrame.grid(row = 7, column = 0)
             self.BtnFrame.columnconfigure(0, weight=1) 
             self.BtnFrame.columnconfigure(1, weight=1) 
             self.BtnFrame.columnconfigure(2, weight=1)
             #button to submit updates
-            self.editMonsterBtn = tk.Button(self.BtnFrame, text = "Update Monster", font = ("Times New Roman", 14), command = lambda: self.EditMonster(monster_id, self.editMonsterNameEntry.get(),self.editMonsterImgEntry.get(),self.editMonsterFormFrame )) 
+            self.editMonsterBtn = tk.Button(self.BtnFrame, text = "Update Monster", font = ("Times New Roman", 14), command = lambda: self.EditMonster(monster_id, self.editMonsterNameEntry.get(),self.editMonsterImgEntry.get(),self.editMonsterBankEntry.get(),self.editMonsterFormFrame )) 
             self.editMonsterBtn.grid(row = 0, column = 0, pady = 5, padx = 10)
             #button to cancel
             self.cancelBtn = tk.Button(self.BtnFrame, text = "Cancel", font = ("Times New Roman", 14), command = lambda: self.ViewAllMonsters(self.editMonsterFormFrame)) 
             self.cancelBtn.grid(row = 0, column = 1, pady = 5, padx = 10) 
         
-    def EditMonster(self, id, name, img, frame):
+    def EditMonster(self, id, name, img, bank, frame):
         try:
             #add the monster with given info
-            wanderingMonster.updateMonster(id, name, img)
+            wanderingMonster.updateMonster(id, name, img, bank)
             #Destroy the previous frame
             self.destroyThing(frame)
             #send back to welcome screen
@@ -514,10 +539,13 @@ class WhatToDo(tk.Frame):
 
         self.deleteMonsterImgLabel = tk.Label(self.deleteMonsterFormFrame, text = f"Monster Image: {monsterImg}", font= ("Times New Roman", 18), wraplength=350, pady = 15)
         self.deleteMonsterImgLabel.grid(row = 2, column = 0)
+
+        self.deleteMonsterBankLabel = tk.Label(self.deleteMonsterFormFrame, text = f"Monster Bank: {monsterImg}", font= ("Times New Roman", 18), wraplength=350, pady = 15)
+        self.deleteMonsterBankLabel.grid(row = 3, column = 0)
         
         #create frame to hold buttons
         self.BtnFrame = tk.Frame(self.deleteMonsterFormFrame)
-        self.BtnFrame.grid(row = 3, column = 0)
+        self.BtnFrame.grid(row = 4, column = 0)
         self.BtnFrame.columnconfigure(0, weight=1) 
         self.BtnFrame.columnconfigure(1, weight=1) 
         self.BtnFrame.columnconfigure(2, weight=1)
@@ -544,8 +572,9 @@ class WhatToDo(tk.Frame):
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # ACCESS QUESTIONS  # # # # # # # # # # # # # # # # # # # # # #
     def AccessQuestions(self, frame):
+        #destroy the previous frame
         self.destroyThing(frame)
-
+        #New frame for this page
         self.questionFrame = tk.Frame(self)
         self.questionFrame.grid(row = 0, column = 0)
 
@@ -557,12 +586,15 @@ class WhatToDo(tk.Frame):
         self.viewQuestionsBtn = tk.Button(self.questionFrame, text = "View All Questions", font = ("Times New Roman", 14), command = lambda: self.ViewAllQuestions(self.questionFrame)) 
         self.viewQuestionsBtn.grid(row = 1, column = 0, pady = 10)
 
+        self.viewQandMBtn = tk.Button(self.questionFrame, text = "View All Questions with Monster", font = ("Times New Roman", 14), command = lambda: self.ViewAllQandM(self.questionFrame)) 
+        self.viewQandMBtn.grid(row = 2, column = 0, pady = 10)
+
         self.addQuestionBtn = tk.Button(self.questionFrame, text = "Add a Question", font = ("Times New Roman", 14), command = self.AddQuestionForm) 
-        self.addQuestionBtn.grid(row = 2, column = 0, pady = 10)
+        self.addQuestionBtn.grid(row = 3, column = 0, pady = 10)
 
         #home button
         self.homeBtn = tk.Button(self.questionFrame, text = "Home", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(frame=self.questionFrame)) 
-        self.homeBtn.grid(row = 3, column = 0, pady = 5)  
+        self.homeBtn.grid(row = 4, column = 0, pady = 5)  
 
 
     def ViewAllQuestions(self, frame):
@@ -588,8 +620,33 @@ class WhatToDo(tk.Frame):
         self.displayList(getQuestions, headers, self.viewAllQuestionsFrame, "questions")     
         #home button
         self.homeBtn = tk.Button(self.viewAllQuestionsFrame, text = "Home", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(frame=self.viewAllQuestionsFrame)) 
-        self.homeBtn.grid(row = 0, column = 4, pady = 5)           
+        self.homeBtn.grid(row = 0, column = 5, pady = 5)           
     
+    def ViewAllQandM(self, frame):
+        #Destroy the previous frame
+        self.destroyThing(frame)
+        #New frame for this page
+        self.viewAllQandMFrame = ctk.CTkScrollableFrame(self, fg_color= "gray95")
+        self.viewAllQandMFrame.grid(row = 0, column = 0, sticky = "news")
+        #configure columns/rows
+        self.viewAllQandMFrame.columnconfigure(0, weight=1)
+        self.viewAllQandMFrame.columnconfigure(1, weight=4)
+        self.viewAllQandMFrame.columnconfigure(2, weight=3)
+        self.viewAllQandMFrame.columnconfigure(3, weight=1)
+        self.viewAllQandMFrame.columnconfigure(4, weight=1)
+        self.viewAllQandMFrame.rowconfigure(0, weight=1)
+
+        #hold headers to send for display
+        headers = ["ID", "Question", "Answer", "Monster", "Bank"]
+        #hold questions in list to send for display
+        questions.getAllQuestionsWithMonster()
+        getQuestions = questions.allQuestions
+        #send list for display
+        self.displayList(getQuestions, headers, self.viewAllQandMFrame, "questions")     
+        #home button
+        self.homeBtn = tk.Button(self.viewAllQandMFrame, text = "Home", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(frame=self.viewAllQandMFrame)) 
+        self.homeBtn.grid(row = 0, column = 6, pady = 5)           
+
     def AddQuestionForm(self):
         #Destroy the previous frame
         self.destroyThing(self.questionFrame)
@@ -776,13 +833,14 @@ class WhatToDo(tk.Frame):
         self.BBSetupFrame.columnconfigure(0, weight=1)
         self.BBSetupFrame.rowconfigure(0, weight=1)   
                 
-        #create elements to collect data
+        #Coming Soon Message
         self.BBSetupLabel = tk.Label(self.BBSetupFrame, text = "Boss Battle \nComing Soon!", font= ("Times New Roman", 18), wraplength=350, pady = 15)
         self.BBSetupLabel.grid(row = 0, column = 0)
 
         #button to cancel
         self.cancelBtn = tk.Button(self.BBSetupFrame, text = "Go Back", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(self.BBSetupFrame)) 
         self.cancelBtn.grid(row = 1, column = 0, pady = 5, padx = 10) 
+
 
     def displayList(self, list, headers, frame, type):
         h = 0
@@ -793,13 +851,15 @@ class WhatToDo(tk.Frame):
             h += 1
 
         
-        i = 0
+        i = 1
 
         for item in list:
+            self.separator = ttk.Separator(frame)
+            self.separator.grid(row = i, columnspan = len(headers)+2, sticky = "ew", pady = 5)
             id = item[0]
             j = 0
             for index in item:
-                self.columnLabel = tk.Label(frame, text = index, font= ("Times New Roman", 14), wraplength=100, pady = 15)
+                self.columnLabel = tk.Label(frame, text = index, font= ("Times New Roman", 14), wraplength=200, pady = 15)
                 self.columnLabel.grid(row = i+1, column = j, pady = 5)
                 j += 1
             
@@ -822,7 +882,9 @@ class WhatToDo(tk.Frame):
 
                     self.deleteBtn = tk.Button(frame, text = "Delete", font = ("Times New Roman", 14), command = lambda id = id: self.DeleteQuestionForm(id, frame)) 
                     self.deleteBtn.grid(row = i+1, column = len(headers)+1, pady = 5, padx = 15)
-            i += 1
+            i += 2
+            
+
 
     
     ##################### destroyThing() code used in previous project- not new code          
@@ -830,9 +892,6 @@ class WhatToDo(tk.Frame):
     def destroyThing(self, thing):
         if thing: thing.destroy()   
     ##################### End of reused code
-
-
-
 
 
 # # # # # # # # # # #  BOSS BATTLE SETUP  # # # # # # # # # #
