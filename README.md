@@ -5,14 +5,11 @@ This program is a database of questions with answers, added, modified, and delet
 
 This program, like most things I write as I'm learning, is meant to enhance my homeschool. It will eventually run a "Boss Battle" (which is just a gamified quiz to help the kids get excited about reviews), displaying questions, then answers (after the student provides their answer).
 
-{Provide a link to your YouTube demonstration. It should be a 4-5 minute demo of the software running, a walkthrough of the code, and a view of how you created the Relational Database.}
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/7Num9L445Oc)
 
 # Relational Database
 I used SQLite3, as it is supported in Python by simply importing the appropriate library. It doesn't require a separate server, making it easy to work with. It works very similar to SQL, but is limited to the most commonly used features and commands. The source code is in the public domain, making it free for everyone to use.
 
-{Describe the structure (tables) of the relational database that you created.}
 Tables:
     Students (student_id, name, image)
     Monsters (monster_id, name, image, bank)
