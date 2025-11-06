@@ -6,25 +6,33 @@ class Monster():
         self.HP = 12
     #list of all monsters in database
     allMonsters = []
+    bankMonsters = []
     
-    # return a random monster
-    def randomMonster(self):
-        shuffledList = random.shuffle(self.monsters)
-        return shuffledList[0]
+    # return a random monster for that bank
+    def randomMonster(self, bank):
+        #connect & create cursor
+        conn = self.openConnection()
+        c = conn.cursor()
+        #select monsters for that bank
+        c.execute(f"SELECT * FROM monsters WHERE bank = '{bank}'")
+        fetchedMonsters = c.fetchall()
+
+        for monster in fetchedMonsters:
+            self.bankMonsters.append(monster)
+
+        #commit & close connection
+        conn.commit()
+        conn.close()
+        
+        random.shuffle(self.bankMonsters)
+
+        return self.bankMonsters[0]
         
     #reduce monster HP by 1
     def reduceMonsterHP(self):
         if self.HP > 0:
             self.HP -= 1
     
-    # return a random monster
-    def randomMonster(self):
-        randomPlayer = self.players[0]
-        print("Before delete:" + randomPlayer)
-        del self.players[0]
-        print("After delete:" + randomPlayer)
-        return randomPlayer
-          
     #add monster
     def addMonster(self, name, img, bank):
         #connect & create cursor
@@ -37,7 +45,6 @@ class Monster():
         #commit & close connection
         conn.commit()
         conn.close()
-        print("Monster added")
 
     #get Monsters
     def getMonsters(self):

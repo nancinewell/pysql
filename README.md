@@ -13,6 +13,15 @@ This program, like most things I write as I'm learning, is meant to enhance my h
 I used SQLite3, as it is supported in Python by simply importing the appropriate library. It doesn't require a separate server, making it easy to work with. It works very similar to SQL, but is limited to the most commonly used features and commands. The source code is in the public domain, making it free for everyone to use.
 
 {Describe the structure (tables) of the relational database that you created.}
+Tables:
+    Students (student_id, name, image)
+    Monsters (monster_id, name, image, bank)
+    Questions (question_id, question, answer, bank)
+
+Monsters and Questions both have a "bank" field, so the teacher can assign monster(s) to a question bank. When the boss battle starts, it will select a random monster assigned to the question bank being used. 
+
+A student will be assigned randomly to each question until all students have answered. Then the students will be shuffled and presented one at a time again as needed until all questions are answered, or the monster is defeated.
+
 
 # Development Environment
 I wrote this program in the IDE Visual Studio Code version 1.105.1 with 4 extensions to make it more friendly to Python: Pylance, Python, Python Debugger, and Python Environments.
@@ -27,8 +36,10 @@ I wrote this program using Python with Tkinter for the front end and SQLite3 for
 - [Sololearn](https://www.sololearn.com)
 - [SQLITE Tutorial](https://www.sqlitetutorial.net/)
 - [Python](https://docs.python.org/3.8/library/sqlite3.html)
+- [DigitalOcean](https://www.digitalocean.com/community/tutorials/python-remove-duplicates-from-list)
+- [W3Schools](https://www.w3schools.com/sql)
 
 # Future Work
-- Integrate the Boss Battle! I set out to create the databases and integrate them into a boss battle app, but the timeframe I set myself was already exceeded when I finished with the databases. I'll complete the boss battle itself in a future project. 
 - I would like to make the Image field a drop down to make it more user friendly- choose from a list of images instead of typing it out and hoping it's correct.
 - I would like to learn another front-end method for Python. Tkinter gets the job done, but it's not customizable enough for modern applications to have a modern look and feel.
+- I would like to refactor the code to break out the massive amount of functions in WhatToDo(). I would like to break it out by Access Students, Access Monsters, Access Questions, and Boss Battle.

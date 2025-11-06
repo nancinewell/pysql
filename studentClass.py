@@ -4,24 +4,29 @@ import sqlite3
 class Student():
     def __init__(self):
         self.getStudents()
+        self.resetPlayers()
     
     #list of all students in database
     allStudents = []
     #changing list of players 
-    players = []
-    #Need current player
+    players = [""]
     
+    randomPlayer = players[0]
+
     # return a random student
-    def randomStudent(self):
-        randomPlayer = self.players[0]
-        print("Before delete:" + randomPlayer)
+    def randomPlayerSelection(self):
+        #if players is empty, refill it
+        if not self.players: self.resetPlayers()
+        self.randomPlayer = self.players[0]
+        #remove player from list
         del self.players[0]
-        print("After delete:" + randomPlayer)
-        return randomPlayer
+        #return player
+        return self.randomPlayer
           
     #reset players
     def resetPlayers(self):
-        self.players = random.shuffle(self.students.copy())
+        self.players = self.allStudents.copy()
+        random.shuffle(self.players)
 
     #add student
     def addStudent(self, name, img):
@@ -35,7 +40,6 @@ class Student():
         #commit & close connection
         conn.commit()
         conn.close()
-        print("Student added")
 
     #get Students
     def getStudents(self):

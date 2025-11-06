@@ -6,6 +6,8 @@ from studentClass import Student
 from questionsClass import Question
 from PIL import ImageTk, Image  
 from tkinter import ttk
+import random
+import math
 
 # # # # # # # # # # #  CREATE TABLES  # # # # # # # # # #
 #define connection and cursor
@@ -30,7 +32,7 @@ student_id INTEGER PRIMARY KEY
 , image TEXT)"""
 c.execute(createStudentTable)
 
-#create questions table
+#create questions table 
 createQuestionTable = """CREATE TABLE IF NOT EXISTS
 questions(
 question_id INTEGER PRIMARY KEY
@@ -100,7 +102,7 @@ class WhatToDo(tk.Frame):
         self.welcomeLabel.grid(row = 1, column = 0, pady = 5)
  
         #Option Buttons
-        self.bossBattleBtn = tk.Button(self.welcomeFrame, text = "Boss Battle!", font = ("Times New Roman", 14), command = lambda: self.BBSetup(self.welcomeFrame)) 
+        self.bossBattleBtn = tk.Button(self.welcomeFrame, text = "Boss Battle!", font = ("Times New Roman", 20), command = lambda: self.BBSetup(self.welcomeFrame)) 
         self.bossBattleBtn.grid(row = 2, column = 0, pady = 10)
 
         self.studentBtn = tk.Button(self.welcomeFrame, text = "Access Students", font = ("Times New Roman", 14), command = lambda: self.AccessStudents(self.welcomeFrame)) 
@@ -286,7 +288,6 @@ class WhatToDo(tk.Frame):
     def DeleteStudentForm(self, student_id, frame):
         #fetch student
         studentToDelete = students.getStudent(student_id)
-        print(f"Student fetched: {studentToDelete}")
         #convert student info to TKString for default values
         studentName = studentToDelete[1]
         studentImg = studentToDelete[2]
@@ -324,7 +325,6 @@ class WhatToDo(tk.Frame):
         self.cancelBtn.grid(row = 0, column = 1, pady = 5, padx = 10) 
 
     def DeleteStudent(self, student_id, frame):
-        print(f"DeleteStudent() reached. student_id: {student_id}" )
         try:
             #add the student with given info
             students.deleteStudent(student_id)
@@ -517,7 +517,6 @@ class WhatToDo(tk.Frame):
     def DeleteMonsterForm(self, monster_id, frame):
         #fetch monster
         monsterToDelete = wanderingMonster.getMonster(monster_id)
-        print(f"Monster fetched: {monsterToDelete}")
         #convert monster info to TKString for default values
         monsterName = monsterToDelete[1]
         monsterImg = monsterToDelete[2]
@@ -557,7 +556,6 @@ class WhatToDo(tk.Frame):
         self.cancelBtn.grid(row = 0, column = 1, pady = 5, padx = 10) 
 
     def DeleteMonster(self, monster_id, frame):
-        print(f"DeleteMonster() reached. monster_id: {monster_id}" )
         try:
             #add the monster with given info
             wanderingMonster.deleteMonster(monster_id)
@@ -768,7 +766,6 @@ class WhatToDo(tk.Frame):
     def DeleteQuestionForm(self, question_id, frame):
         #fetch question
         questionToDelete = questions.getQuestion(question_id)
-        print(f"Question fetched: {questionToDelete}")
         #convert question info to TKString for default values
         questionText = questionToDelete[1]
         answerText = questionToDelete[2]
@@ -808,7 +805,6 @@ class WhatToDo(tk.Frame):
         self.cancelBtn.grid(row = 0, column = 1, pady = 5, padx = 10) 
 
     def DeleteQuestion(self, question_id, frame):
-        print(f"DeleteQuestion() reached. question_id: {question_id}" )
         try:
             #add the question with given info
             questions.deleteQuestion(question_id)
@@ -821,7 +817,8 @@ class WhatToDo(tk.Frame):
             self.errorMsg = tk.Label(frame, text = f"Error: {e}. Question not added.", font= ("Times New Roman", 12), wraplength=350, pady = 15, fg = "red")
             self.errorMsg.grid(row = 5, column = 0)
     
-# # # # # # # # # # #  BOSS BATTLE SET UP!  # # # # # # # # # #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # BOSS BATTLE  # # # # # # # # # # # # # # # # # # # # # #
  
     def BBSetup(self, frame):
         #Destroy the previous frame
@@ -831,15 +828,214 @@ class WhatToDo(tk.Frame):
         self.BBSetupFrame.grid(row = 0, column = 0, sticky = "news")
         #configure columns/rows
         self.BBSetupFrame.columnconfigure(0, weight=1)
-        self.BBSetupFrame.rowconfigure(0, weight=1)   
-                
-        #Coming Soon Message
-        self.BBSetupLabel = tk.Label(self.BBSetupFrame, text = "Boss Battle \nComing Soon!", font= ("Times New Roman", 18), wraplength=350, pady = 15)
-        self.BBSetupLabel.grid(row = 0, column = 0)
+        self.BBSetupFrame.rowconfigure(0, weight=4)
+        self.BBSetupFrame.rowconfigure(1, weight=1)
+        self.BBSetupFrame.rowconfigure(2, weight=1)
+         
+        #display the  monster with name
+        monsterAvatar = ImageTk.PhotoImage(Image.open(f"img/monster-10.png").resize((300,300)))
+        self.imageLabel = tk.Label(self.BBSetupFrame, image=monsterAvatar)
+        self.imageLabel.image = monsterAvatar
+        self.imageLabel.grid(row = 0, column = 0, pady = 5)
+        
+        #pull list of banks  
+        banks = questions.getBanks()
+        #var to store the selection
+        selection = tk.StringVar(self)
+        #optionMenu
+        self.arenaMenu =  ttk.OptionMenu(self.BBSetupFrame, selection, banks[0], *banks)
+        self.arenaMenu.grid(row = 1, column = 0)
+        
+        #configure font of menu
+        style = ttk.Style()
+        style.configure('TMenubutton', font = ("Times New Roman", 14))
 
-        #button to cancel
-        self.cancelBtn = tk.Button(self.BBSetupFrame, text = "Go Back", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(self.BBSetupFrame)) 
-        self.cancelBtn.grid(row = 1, column = 0, pady = 5, padx = 10) 
+        #frame to hold the buttons
+        BtnFrame = tk.Frame(self.BBSetupFrame)
+        BtnFrame.grid(row = 2, column = 0, columnspan = 4, sticky = "ew")
+        BtnFrame.columnconfigure(0, weight=1) 
+        BtnFrame.columnconfigure(1, weight=1) 
+        #button to submit
+        self.arenaButton = tk.Button(BtnFrame, text = "Submit", font = ("Times New Roman", 14), command = lambda: self.BattleSetup(selection.get(), self.BBSetupFrame))
+        self.arenaButton.grid(row = 0, column = 0, pady = 5, padx = 10)
+        self.cancelBtn = tk.Button(BtnFrame, text = "Go Back", font = ("Times New Roman", 14), command = lambda: self.WelcomeOptions(self.BBSetupFrame)) 
+        self.cancelBtn.grid(row = 0, column = 1, pady = 5, padx = 10)
+
+    def BattleSetup(self, selection, frame):
+        #get a monster
+        self.currentMonster = wanderingMonster.randomMonster(selection)
+        #get question list
+        questions.getQuestions(selection)
+        #how many questions?
+        numQuestions = len(questions.questionsFromBank)
+        #set monster HP based on number of questions
+        wanderingMonster.HP = math.floor(numQuestions*.8)
+        print(f"Monster HP set to: {wanderingMonster.HP}")
+
+        #Destroy the previous frame
+        self.destroyThing(frame)
+        #New frame for this page
+        self.BattleSetupFrame = tk.Frame(self)
+        self.BattleSetupFrame.grid(row = 0, column = 0, sticky = "news")
+        #configure columns/rows
+        self.BattleSetupFrame.columnconfigure(0, weight=1)
+        self.BattleSetupFrame.rowconfigure(0, weight=1)
+        self.BattleSetupFrame.rowconfigure(1, weight=1)
+        self.BattleSetupFrame.rowconfigure(2, weight=1)           
+        
+        #display the  monster with name
+        monsterAvatar = ImageTk.PhotoImage(Image.open(f"img/{self.currentMonster[2]}").resize((300,300)))
+        self.imageLabel = tk.Label(self.BattleSetupFrame, image=monsterAvatar)
+        self.imageLabel.image = monsterAvatar
+        self.imageLabel.grid(row = 0, column = 0, pady = 5)
+
+        self.monsterLabel = tk.Label(self.BattleSetupFrame, text = self.currentMonster[1], font = ("Times New Roman", 24))
+        self.monsterLabel.grid(row = 1, column = 0)
+
+        #Start Battle
+        self.fightButton = tk.Button(self.BattleSetupFrame, text = "Fight!", font = ("Times New Roman", 18), command = lambda: self.StartBattle(self.BattleSetupFrame))
+        self.fightButton.grid(row = 2, column = 0)
+
+# # # # # # # # # # #  START BATTLE  # # # # # # # # # #
+    def StartBattle(self, frame):
+        
+        #Destroy the previous frame     
+        self.destroyThing(frame)
+        #New frame for this page
+        self.battleFrame = tk.Frame(self)
+        self.battleFrame.grid(row = 0, column = 0, sticky = "news")
+        #configure columns/rows
+        self.battleFrame.columnconfigure(0, weight=4)
+        self.battleFrame.columnconfigure(1, weight=1)
+        self.battleFrame.columnconfigure(2, weight=4)
+        self.battleFrame.rowconfigure(0, weight=5)
+        self.battleFrame.rowconfigure(1, weight=1)
+        self.battleFrame.rowconfigure(2, weight=2)
+        
+        #get current player
+        currentPlayer = students.randomPlayerSelection()
+        #Display monster
+        monsterAvatar = ImageTk.PhotoImage(Image.open(f"img/{self.currentMonster[2]}").resize((250,250)))
+        imageLabel = tk.Label(self.battleFrame, image=monsterAvatar)
+        imageLabel.image = monsterAvatar
+        imageLabel.grid(row = 0, column = 0, pady = 5)
+        #Display monster name
+        monsterLabel = tk.Label(self.battleFrame, text = self.currentMonster[1], font = ("Times New Roman", 18))
+        monsterLabel.grid(row = 1, column = 0)
+        #Display monster HP 
+        monsterHPLabel = tk.Label(self.battleFrame, text = f"HP: {wanderingMonster.HP}", font = ("Times New Roman", 18))
+        monsterHPLabel.grid(row = 2, column = 0)
+        #Display VS
+        VSLabel = tk.Label(self.battleFrame, text = "VS", font = ("Times New Roman", 36))
+        VSLabel.grid(row = 0, column = 1)
+        # Display player
+        PlayerAvatar = ImageTk.PhotoImage(Image.open(f"img/{currentPlayer[2]}").resize((250,250)))
+        imageLabel = tk.Label(self.battleFrame, image=PlayerAvatar)
+        imageLabel.image = PlayerAvatar
+        imageLabel.grid(row = 0, column = 3, pady = 5)
+        #Display player name
+        playerLabel = tk.Label(self.battleFrame, text = currentPlayer[1], font = ("Times New Roman", 18))
+        playerLabel.grid(row = 1, column = 3)
+        
+        self.displayQuestion(self.battleFrame)
+
+# # # # # # # # # # #  RUN GAME  # # # # # # # # # #
+    def displayQuestion(self, frame):
+        #if there are more questions...
+        if not questions.questionsFromBank:
+            self.endGame(frame)
+        #get question
+        currentQ = questions.randomQuestionSelection()
+        # question & answer
+        question = currentQ[1]
+        answer = currentQ[2]
+
+        questionLabel = tk.Label(frame, text = question, font = ("Times New Roman", 18), anchor = "center", wraplength=600)
+        questionLabel.grid(row = 3, column = 0, columnspan = 4, sticky = "ew", pady = 10)
+
+        revealAnswerBtn = tk.Button(frame, text = "Reveal Answer", font = ("Times New Roman", 18), command = lambda: self.revealAnswer(answer, frame, revealAnswerBtn))
+        revealAnswerBtn.grid(row = 4, column = 0, columnspan = 4, padx = 10, pady = 10)
+
+        answerPlaceholderLabel= tk.Label(frame, text = "", font = ("Times New Roman", 18), anchor = "center", wraplength=600)
+        answerPlaceholderLabel.grid(row = 5)
+
+    def revealAnswer(self, answer, frame, button):
+        #Destroy the button     
+        self.destroyThing(button)
+
+        answerLabel= tk.Label(frame, text = answer, font = ("Times New Roman", 18), anchor = "center", wraplength=600)
+        answerLabel.grid(row = 4, column = 0, columnspan = 4)
+
+        #frame to hold the buttons
+        BtnFrame = tk.Frame(frame)
+        BtnFrame.grid(row = 5, column = 0, columnspan = 4, sticky = "ew")
+        BtnFrame.columnconfigure(0, weight=1) 
+        BtnFrame.columnconfigure(1, weight=1) 
+        
+        correctBtn = tk.Button(BtnFrame, text = "Correct", font = ("Times New Roman", 18), command = lambda: self.inCorrectAnswer(frame, True))
+        correctBtn.grid(row = 0, column = 0)
+
+        incorrectBtn = tk.Button(BtnFrame, text = "Incorrect", font = ("Times New Roman", 18), command = lambda: self.inCorrectAnswer(frame, False))
+        incorrectBtn.grid(row = 0, column = 1)
+    
+    def inCorrectAnswer(self, frame, correct):
+        #Destroy the previous frame     
+        self.destroyThing(frame)
+        #New frame for this page
+        self.inCorrectFrame = tk.Frame(self)
+        self.inCorrectFrame.grid(row = 0, column = 0, sticky = "news")
+        #configure columns/rows
+        self.inCorrectFrame.columnconfigure(0, weight=4)
+        self.inCorrectFrame.rowconfigure(0, weight=5)
+
+        kudos = ["Great Job!", "Nice Work!", "Correct!", "Way to go!", "Amazing!"]
+        random.shuffle(kudos)
+
+        consolation = ["Sorry, that was incorrect.", "Not this time.", "Try again."]
+        random.shuffle(consolation)
+
+        if correct == True:
+            #give kudos!
+            kudosLabel = tk.Label(self.inCorrectFrame, text = kudos[0], font = ("Times New Roman", 40))
+            kudosLabel.grid(row = 0, column = 0, sticky = "ew")
+            #reduce monster HP
+            wanderingMonster.reduceMonsterHP()
+            #check if HP is 0
+            if wanderingMonster.HP == 0 or len(questions.questionsFromBank) == 0: 
+                self.endGame(self.inCorrectFrame)
+        else: 
+            condolencesLabel = tk.Label(self.inCorrectFrame, text = consolation[0], font = ("Times New Roman", 40))
+            condolencesLabel.grid(row = 0, column = 0)
+        
+        #call another question
+        continueBtn = tk.Button(self.inCorrectFrame, text = "Continue", font = ("Times New Roman", 18), command = lambda: self.StartBattle(self.inCorrectFrame))
+        continueBtn.grid(row = 1, column = 0, pady = 10)
+            
+
+    def endGame(self, frame):
+        #Destroy the previous frame     
+        self.destroyThing(frame)
+        #New frame for this page
+        self.endGameFrame = tk.Frame(self)
+        self.endGameFrame.grid(row = 0, column = 0, sticky = "news")
+        #configure columns/rows
+        self.endGameFrame.columnconfigure(0, weight=4)
+        self.endGameFrame.rowconfigure(0, weight=5)
+
+        if wanderingMonster.HP == 0:
+            #Display Congrats!
+            congratsImg = ImageTk.PhotoImage(Image.open("img/congrats.png").resize((600, 135)))
+            imageLabel = tk.Label(self.endGameFrame, image=congratsImg)
+            imageLabel.image = congratsImg
+            imageLabel.grid(row = 0, column = 0, padx = 5, pady = 5, sticky = "nsew")
+
+        else:
+            #Display Consolation
+            consolationLabel = tk.Label(self.endGameFrame, text = "Game Over! Better luck next time!", font = ("Times New Roman", 36))
+            consolationLabel.grid(row = 0, column = 0, padx = 5, pady = 5, sticky = "nsew")
+        #home Btn
+        homeBtn = tk.Button(self.endGameFrame, text = "Home", font = ("Times New Roman", 18), command = lambda: self.WelcomeOptions(self.endGameFrame))
+        homeBtn.grid(row = 1, column = 0, pady = 10)
 
 
     def displayList(self, list, headers, frame, type):
@@ -883,10 +1079,7 @@ class WhatToDo(tk.Frame):
                     self.deleteBtn = tk.Button(frame, text = "Delete", font = ("Times New Roman", 14), command = lambda id = id: self.DeleteQuestionForm(id, frame)) 
                     self.deleteBtn.grid(row = i+1, column = len(headers)+1, pady = 5, padx = 15)
             i += 2
-            
-
-
-    
+        
     ##################### destroyThing() code used in previous project- not new code          
      #function to destroy things
     def destroyThing(self, thing):
@@ -894,35 +1087,7 @@ class WhatToDo(tk.Frame):
     ##################### End of reused code
 
 
-# # # # # # # # # # #  BOSS BATTLE SETUP  # # # # # # # # # #
-#choose your arena!
-#dropdown menu: Physics Unit 1, Physics Unit 2, Physics Unit 3
 
-# # # # # # # # # # #  SETUP BATTLE  # # # # # # # # # #
-#get question list
-#get wandering monster
-#get players
-#display the  monster with name
-#Start Battle
-
-# # # # # # # # # # #  START BATTLE  # # # # # # # # # #
-#if players is empty, reset players
-#get current player
-#Display monster, monster HP & player
-#displayQuestion()
-
-# # # # # # # # # # #  RUN GAME  # # # # # # # # # #
-
-#display question
-#display answer w/ correct/incorrect buttons
-
-#ResultActions
-#if correct, reduce monster HP
-
-# # # # # # # # # # #  END GAME  # # # # # # # # # #
-#if monsterHP == 0, you win
-#elif Questions == 0, you lost
-# else ask another question
 
 
 

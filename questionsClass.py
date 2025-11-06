@@ -7,19 +7,16 @@ class Question():
 
     #list of all questions in the selected bank
     allQuestions = []
-    questions = []
-  
+    questionsFromBank = []
+    randomQuestion = None
     # return a random question
-    def randomQuestion(self):
-        self.qa = self.listGenerator(self.questions)
-        currentQ = next(self.qa)
-        return currentQ
-    
-    #####################Question Generator code used in previous project- not new code          
-    def questionGenerator(self, list):
-        for i in list:
-            yield i
-    #####################End of reused code
+    def randomQuestionSelection(self):
+        #grab the first shuffled question
+        self.randomQuestion = self.questionsFromBank[0]
+        #remove question from list
+        del self.questionsFromBank[0]
+        #return question
+        return self.randomQuestion
            
     #add question
     def addQuestion(self, question, answer, bank):
@@ -33,7 +30,6 @@ class Question():
         #commit & close connection
         conn.commit()
         conn.close()
-        print("Question added")
 
     #get all questions
     def getAllQuestions(self):
@@ -80,17 +76,16 @@ class Question():
         conn = self.openConnection()
         c = conn.cursor()
         #select all questions
-        c.execute(f"SELECT question_id, * FROM questions WHERE bank = '{bank}'")
+        c.execute(f"SELECT * FROM questions WHERE bank = '{bank}'")
         selectedQuestions = c.fetchall()
         #add questions to the list
         for question in selectedQuestions:
-            self.questions.append(question)
+            self.questionsFromBank.append(question)
         #commit & close connection
         conn.commit()
         conn.close()
         #shuffle questions
-        self.questions = random.shuffle(self.questions)
-        print(self.questions)
+        self.questions = random.shuffle(self.questionsFromBank)
 
     #get single question by id
     def getQuestion(self, question_id):
@@ -119,7 +114,6 @@ class Question():
         #commit & close connection
         conn.commit()
         conn.close()
-        print("Question updated")
    
     #delete question
     def deleteQuestion(self, question_id):
@@ -134,8 +128,25 @@ class Question():
         #commit & close connection
         conn.commit()
         conn.close()
-        print("Question deleted")
     
+    #get list of unique banks
+    def getBanks(self):
+        #connect & create cursor
+        conn = self.openConnection()
+        c = conn.cursor()
+        #select all questions
+        c.execute(f"SELECT DISTINCT bank FROM questions")
+        banks = c.fetchall()
+        bank = []
+        #add questions to the list
+        for item in banks:
+            bank.append(str(item[0]))
+        #commit & close connection
+        conn.commit()
+        conn.close()
+        return bank
+
+
     def openConnection(self):
         conn = sqlite3.connect('bossbattle.db')
         return conn
